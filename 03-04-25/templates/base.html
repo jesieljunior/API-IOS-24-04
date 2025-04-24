@@ -1,0 +1,350 @@
+\base.html
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}IOS - Sistema de Chamada{% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/sidebar.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- Sidebar overlay para dispositivos móveis -->
+      <div class="sidebar-overlay"></div>
+
+      <!-- Botão do menu para dispositivos móveis -->
+      <button class="mobile-menu-toggle">
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <!-- Sidebar / Menu lateral -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-logo">
+            <img
+              src="{{ url_for('static', filename='img/logo-ios.png') }}"
+              alt="Logo IOS"
+            />
+            <h2>Sistema IOS</h2>
+          </div>
+          <button class="toggle-sidebar" title="Expandir/Recolher menu">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+        </div>
+
+        <nav class="sidebar-menu">
+          <!-- Seção Dashboard -->
+          <div class="menu-section">
+            <h3 class="menu-section-title">Principal</h3>
+
+            {% if session.get('tipo_usuario') == 'master' %}
+            <!-- Menu para Administrador -->
+            <a
+              href="{{ url_for('master_dashboard') }}"
+              class="menu-item"
+              data-tooltip="Dashboard"
+            >
+              <span class="menu-icon"
+                ><i class="fas fa-tachometer-alt"></i
+              ></span>
+              <span class="menu-text">Dashboard</span>
+            </a>
+            {% elif session.get('tipo_usuario') == 'professor' %}
+            <!-- Menu para Professor -->
+            <a
+              href="{{ url_for('professor_dashboard') }}"
+              class="menu-item"
+              data-tooltip="Dashboard"
+            >
+              <span class="menu-icon"
+                ><i class="fas fa-tachometer-alt"></i
+              ></span>
+              <span class="menu-text">Dashboard</span>
+            </a>
+            {% else %}
+            <!-- Menu para usuário não logado ou outro tipo -->
+            <a
+              href="{{ url_for('index') }}"
+              class="menu-item"
+              data-tooltip="Início"
+            >
+              <span class="menu-icon"><i class="fas fa-home"></i></span>
+              <span class="menu-text">Início</span>
+            </a>
+            {% endif %}
+          </div>
+
+          {% if session.get('tipo_usuario') == 'master' %}
+          <!-- Seção Gestão para Administrador -->
+          <div class="menu-section">
+            <h3 class="menu-section-title">Gestão</h3>
+
+            <a
+              href="{{ url_for('master_gerenciar_professores') }}"
+              class="menu-item"
+              data-tooltip="Professores"
+            >
+              <span class="menu-icon"
+                ><i class="fas fa-chalkboard-teacher"></i
+              ></span>
+              <span class="menu-text">Professores</span>
+            </a>
+
+            <a
+              href="{{ url_for('master_gerenciar_turmas') }}"
+              class="menu-item"
+              data-tooltip="Turmas"
+            >
+              <span class="menu-icon"><i class="fas fa-users"></i></span>
+              <span class="menu-text">Turmas</span>
+            </a>
+
+            <a
+              href="#"
+              class="menu-item dropdown-toggle"
+              data-dropdown="relatorios"
+            >
+              <span class="menu-icon"><i class="fas fa-chart-bar"></i></span>
+              <span class="menu-text">Relatórios</span>
+              <span class="dropdown-icon"
+                ><i class="fas fa-chevron-right"></i
+              ></span>
+            </a>
+
+            <div id="relatorios" class="menu-dropdown">
+              <a
+                href="{{ url_for('master_relatorios_frequencia_turma') }}"
+                class="submenu-item"
+                >Frequência por Turma</a
+              >
+              <a
+                href="{{ url_for('master_relatorios_resumo_mensal') }}"
+                class="submenu-item"
+                >Resumo Mensal</a
+              >
+              <a
+                href="{{ url_for('master_relatorios_estatisticas_gerais') }}"
+                class="submenu-item"
+                >Estatísticas Gerais</a
+              >
+            </div>
+          </div>
+          {% endif %} {% if session.get('tipo_usuario') == 'professor' %}
+          <!-- Seção Turmas para Professor -->
+          <div class="menu-section">
+            <h3 class="menu-section-title">Minhas Turmas</h3>
+
+            <!-- Este menu seria dinâmico, baseado nas turmas do professor -->
+            {% if turmas %} {% for turma in turmas %}
+            <a
+              href="{{ url_for('professor_visualizar_turma', turma_id=turma.id) }}"
+              class="menu-item"
+              data-tooltip="{{ turma.nome }}"
+            >
+              <span class="menu-icon"><i class="fas fa-users"></i></span>
+              <span class="menu-text">{{ turma.nome }}</span>
+            </a>
+            {% endfor %} {% else %}
+            <div class="menu-item">
+              <span class="menu-icon"><i class="fas fa-info-circle"></i></span>
+              <span class="menu-text">Sem turmas atribuídas</span>
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- Seção Chamadas para Professor -->
+          <div class="menu-section">
+            <h3 class="menu-section-title">Gestão</h3>
+
+            {% if turmas %}
+            <a
+              href="#"
+              class="menu-item dropdown-toggle"
+              data-dropdown="chamadas-dropdown"
+              data-tooltip="Chamadas"
+            >
+              <span class="menu-icon"
+                ><i class="fas fa-clipboard-list"></i
+              ></span>
+              <span class="menu-text">Chamadas</span>
+              <i class="fas fa-chevron-right dropdown-icon"></i>
+            </a>
+            <div id="chamadas-dropdown" class="menu-dropdown">
+              {% for turma in turmas %}
+              <a
+                href="{{ url_for('professor_registrar_chamada', turma_id=turma.id) }}"
+                class="submenu-item"
+              >
+                Registrar - {{ turma.nome }}
+              </a>
+              {% endfor %}
+            </div>
+
+            <a
+              href="#"
+              class="menu-item dropdown-toggle"
+              data-dropdown="historico-dropdown"
+              data-tooltip="Histórico"
+            >
+              <span class="menu-icon"><i class="fas fa-history"></i></span>
+              <span class="menu-text">Histórico</span>
+              <i class="fas fa-chevron-right dropdown-icon"></i>
+            </a>
+            <div id="historico-dropdown" class="menu-dropdown">
+              {% for turma in turmas %}
+              <a
+                href="{{ url_for('professor_visualizar_turma', turma_id=turma.id) }}"
+                class="submenu-item"
+              >
+                Histórico - {{ turma.nome }}
+              </a>
+              {% endfor %}
+            </div>
+            {% else %}
+            <!-- Se não tiver turmas, mostre apenas um item informativo -->
+            <div class="menu-item">
+              <span class="menu-icon"
+                ><i class="fas fa-exclamation-circle"></i
+              ></span>
+              <span class="menu-text">Sem turmas para chamadas</span>
+            </div>
+            {% endif %}
+          </div>
+          {% endif %}
+
+          <!-- Seção Configurações para todos os usuários logados -->
+          {% if session.get('user_id') %}
+          <div class="menu-section">
+            <h3 class="menu-section-title">Configurações</h3>
+
+            <a
+              href="{{ url_for('perfil') }}"
+              class="menu-item"
+              data-tooltip="Meu Perfil"
+            >
+              <span class="menu-icon"><i class="fas fa-user-cog"></i></span>
+              <span class="menu-text">Meu Perfil</span>
+            </a>
+
+            <a
+              href="{{ url_for('logout') }}"
+              class="menu-item"
+              data-tooltip="Sair"
+            >
+              <span class="menu-icon"><i class="fas fa-sign-out-alt"></i></span>
+              <span class="menu-text">Sair</span>
+            </a>
+          </div>
+          {% endif %}
+        </nav>
+
+        <!-- Área do usuário no footer do sidebar -->
+        {% if session.get('user_id') %}
+        <div class="sidebar-footer">
+          <div class="user-profile">
+            <div class="avatar">
+              <!-- Inicial do nome do usuário -->
+              {{ usuario.nome[0]|upper if usuario and usuario.nome else 'U' }}
+            </div>
+            <div class="user-info">
+              <p class="user-name">
+                {{ usuario.nome if usuario and usuario.nome else 'Usuário' }}
+              </p>
+              <p class="user-role">
+                {% if session.get('tipo_usuario') == 'master' %} Administrador
+                {% elif session.get('tipo_usuario') == 'professor' %} Professor
+                {% else %} Usuário {% endif %}
+              </p>
+            </div>
+            <button class="user-menu">
+              <i class="fas fa-ellipsis-v"></i>
+            </button>
+          </div>
+        </div>
+        {% endif %}
+      </aside>
+
+      <!-- Conteúdo principal -->
+      <main class="main-content">
+        <!-- Mensagens flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if
+        messages %} {% for category, message in messages %}
+        <div class="alert alert-{{ category if category != '_' else 'info' }}">
+          {{ message }}
+          <button type="button" class="close-alert">&times;</button>
+        </div>
+        {% endfor %} {% endif %} {% endwith %}
+
+        <!-- Conteúdo da página -->
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+
+    <script>
+      // Função para garantir que a navegação seja concluída de forma limpa
+      document.addEventListener("click", function (e) {
+        // Verificar se o evento foi em um link
+        const link = e.target.closest("a");
+        if (
+          link &&
+          link.getAttribute("href") &&
+          !link.getAttribute("href").startsWith("#") &&
+          !link.getAttribute("target")
+        ) {
+          // Para links internos, garantir que não há promessas pendentes
+          // que possam causar erro "message channel closed"
+          if (window.pendingPromises && window.pendingPromises.length > 0) {
+            try {
+              // Resolver qualquer promessa pendente antes de navegar
+              window.pendingPromises.forEach((promise) => {
+                if (promise && promise.abort) promise.abort();
+              });
+              window.pendingPromises = [];
+            } catch (err) {
+              console.error("Erro ao limpar promessas pendentes:", err);
+            }
+          }
+        }
+      });
+
+      // Array para rastrear promessas pendentes
+      window.pendingPromises = window.pendingPromises || [];
+
+      // Sobrescrever fetch para rastrear requisições pendentes
+      const originalFetch = window.fetch;
+      window.fetch = function () {
+        const fetchCall = originalFetch.apply(this, arguments);
+        window.pendingPromises.push(fetchCall);
+
+        fetchCall
+          .then(function () {
+            const index = window.pendingPromises.indexOf(fetchCall);
+            if (index > -1) window.pendingPromises.splice(index, 1);
+          })
+          .catch(function () {
+            const index = window.pendingPromises.indexOf(fetchCall);
+            if (index > -1) window.pendingPromises.splice(index, 1);
+          });
+
+        return fetchCall;
+      };
+    </script>
+  </body>
+</html>

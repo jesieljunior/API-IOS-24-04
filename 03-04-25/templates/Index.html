@@ -1,0 +1,66 @@
+\Index.html
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Sistema de Chamada IOS{% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
+  <body>
+    <header class="main-header">
+      <nav class="nav-container">
+        <div class="logo-container">
+          <img
+            src="{{ url_for('static', filename='img/logo-ios.png') }}"
+            alt="Logo IOS"
+            class="header-logo"
+          />
+          <h1>Sistema de Chamada IOS</h1>
+        </div>
+        {% if session.user_id %}
+        <div class="nav-links">
+          {% if session.user_tipo == 'master' %}
+          <a href="{{ url_for('master_dashboard') }}">Dashboard</a>
+          <a href="{{ url_for('master_relatorios') }}">Relatórios</a>
+          <a href="{{ url_for('master_gerenciar_professores') }}"
+            >Professores</a
+          >
+          <a href="{{ url_for('master_gerenciar_turmas') }}">Turmas</a>
+          {% endif %}
+          <a href="{{ url_for('logout') }}" class="btn-logout">Sair</a>
+        </div>
+        {% endif %}
+      </nav>
+    </header>
+
+    <main class="main-content">
+      {% with messages = get_flashed_messages() %} {% if messages %}
+      <div class="flash-messages">
+        {% for message in messages %}
+        <div class="flash-message">{{ message }}</div>
+        {% endfor %}
+      </div>
+      {% endif %} {% endwith %} {% block content %}{% endblock %}
+      <!-- Na seção onde está o link para o sistema de chamada, verifique: -->
+      <table>
+        <tr>
+          <td><a href="{{ url_for('login') }}">Sistema de Chamada</a></td>
+          <td>Sistema para controle de presença dos alunos</td>
+        </tr>
+      </table>
+    </main>
+
+    <footer class="main-footer">
+      <p>
+        &copy; 2025 Instituto da Oportunidade Social - Todos os direitos
+        reservados
+      </p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+  </body>
+</html>

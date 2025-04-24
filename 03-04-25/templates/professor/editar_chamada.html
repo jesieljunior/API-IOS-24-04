@@ -1,0 +1,95 @@
+{% extends "base.html" %} {% block title %}Editar Chamada - {{
+data.strftime('%d/%m/%Y') }}{% endblock %} {% block extra_css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/professor-dashboard.css') }}"
+/>
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+/>
+{% endblock %} {% block content %}
+<div class="professor-dashboard">
+  <div class="professor-header">
+    <h1>Editar Chamada</h1>
+    <p>Turma: {{ turma.nome }} - Data: {{ data.strftime('%d/%m/%Y') }}</p>
+  </div>
+
+  <div class="chamada-form">
+    <h2><i class="fas fa-edit"></i> Atualizar Registro de Presença</h2>
+
+    <form
+      method="POST"
+      action="{{ url_for('professor_editar_chamada', turma_id=turma.id, data=data.strftime('%Y-%m-%d')) }}"
+    >
+      <div class="alunos-list">
+        <h3>Lista de Alunos</h3>
+
+        {% if alunos %} {% for aluno_data in alunos %}
+        <div class="aluno-item">
+          <div class="aluno-info">
+            <h4 class="aluno-name">{{ aluno_data.aluno.nome }}</h4>
+            <p class="aluno-id">ID: {{ aluno_data.aluno.id }}</p>
+          </div>
+          <div class="presenca-toggle">
+            <label class="presenca-label presente-label">
+              <input
+                type="radio"
+                name="presenca_{{ aluno_data.aluno.id }}"
+                value="presente"
+                {%
+                if
+                aluno_data.presente
+                %}checked{%
+                endif
+                %}
+              />
+              <span>Presente</span>
+            </label>
+            <label class="presenca-label ausente-label">
+              <input
+                type="radio"
+                name="presenca_{{ aluno_data.aluno.id }}"
+                value="ausente"
+                {%
+                if
+                not
+                aluno_data.presente
+                %}checked{%
+                endif
+                %}
+              />
+              <span>Ausente</span>
+            </label>
+          </div>
+        </div>
+        {% endfor %} {% else %}
+        <p class="empty-state">Não há alunos cadastrados nesta turma.</p>
+        {% endif %}
+      </div>
+
+      <div class="conteudo-aula">
+        <h3>Conteúdo da Aula</h3>
+        <textarea
+          name="conteudo"
+          placeholder="Descreva o conteúdo ministrado na aula..."
+        >
+{{ conteudo_aula }}</textarea
+        >
+      </div>
+
+      <div class="form-footer">
+        <a
+          href="{{ url_for('professor_visualizar_chamada', turma_id=turma.id, data=data.strftime('%Y-%m-%d')) }}"
+          class="btn-professor btn-professor-secondary"
+        >
+          <i class="fas fa-arrow-left"></i> Cancelar
+        </a>
+        <button type="submit" class="btn-professor">
+          <i class="fas fa-save"></i> Atualizar Chamada
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

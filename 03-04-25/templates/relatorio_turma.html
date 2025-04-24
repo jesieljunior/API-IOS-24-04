@@ -1,0 +1,85 @@
+{% extends "base.html" %} {% block title %}Relatório - {{ turma.nome }} -
+Sistema de Chamada{% endblock %} {% block content %}
+<div class="dashboard-container">
+  <div class="page-header">
+    <h2>Relatório de Presença: {{ turma.nome }}</h2>
+    <p>Professor: {{ turma.professor.nome }}</p>
+  </div>
+
+  <div class="actions-bar">
+    <a
+      href="{{ url_for('master_exportar_pdf', turma_id=turma.id) }}"
+      class="btn btn-primary"
+      >Exportar PDF</a
+    >
+    <a href="{{ url_for('master_relatorios') }}" class="btn btn-secondary"
+      >Voltar</a
+    >
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3>Resumo de Presenças</h3>
+    </div>
+
+    {% if dados_alunos %}
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Aluno</th>
+          {% for data in datas_chamada %}
+          <th>{{ data.strftime('%d/%m/%Y') }}</th>
+          {% endfor %}
+          <th>Presenças</th>
+          <th>Faltas</th>
+          <th>%</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for dado in dados_alunos %}
+        <tr>
+          <td>{{ dado.aluno.nome }}</td>
+
+          {% for data in datas_chamada %}
+          <td class="text-center">
+            {% set chamada = dado.aluno.chamadas|selectattr('data', 'eq',
+            data)|first %} {% if chamada %} {% if chamada.presente %}
+            <span class="status-presente">P</span>
+            {% else %}
+            <span class="status-falta">F</span>
+            {% endif %} {% else %} - {% endif %}
+          </td>
+          {% endfor %}
+
+          <td>{{ dado.presencas }}</td>
+          <td>{{ dado.faltas }}</td>
+          <td>{{ "%.1f"|format(dado.porcentagem_presenca) }}%</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+      <p>Não há dados de presença para esta turma.</p>
+    </div>
+    {% endif %}
+  </div>
+
+  {% if conteudos_aula %}
+  <div class="card">
+    <div class="card-header">
+      <h3>Conteúdos das Aulas</h3>
+    </div>
+
+    <div class="conteudos-aula">
+      {% for data, conteudo in conteudos_aula.items() %}
+      <div class="conteudo-aula">
+        <h4>Aula {{ data.strftime('%d/%m/%Y') }}</h4>
+        <p>{{ conteudo }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

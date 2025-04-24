@@ -1,0 +1,134 @@
+{% extends "base.html" %} {% block title %}Estatísticas Gerais do Sistema{%
+endblock %} {% block content %}
+<div class="container">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Estatísticas Gerais do Sistema</h1>
+    <a
+      href="{{ url_for('master_relatorios_estatisticas_gerais', formato='pdf') }}"
+      class="btn btn-primary"
+    >
+      <i class="fas fa-file-pdf"></i> Exportar como PDF
+    </a>
+  </div>
+
+  <div class="row">
+    <div class="col-md-4 mb-4">
+      <div class="card border-primary h-100">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">Números Gerais</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="mb-0">Total de Turmas:</h6>
+            <span class="badge bg-primary rounded-pill fs-6"
+              >{{ num_turmas }}</span
+            >
+          </div>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="mb-0">Total de Professores:</h6>
+            <span class="badge bg-primary rounded-pill fs-6"
+              >{{ num_professores }}</span
+            >
+          </div>
+          <div class="d-flex justify-content-between align-items-center">
+            <h6 class="mb-0">Total de Alunos:</h6>
+            <span class="badge bg-primary rounded-pill fs-6"
+              >{{ num_alunos }}</span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-8 mb-4">
+      <div class="card border-success h-100">
+        <div class="card-header bg-success text-white">
+          <h5 class="mb-0">Estatísticas de Presença (últimos 30 dias)</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4 text-center mb-3">
+              <h2 class="text-success mb-0">{{ taxa_presenca }}%</h2>
+              <p class="text-muted">Taxa de Presença</p>
+            </div>
+            <div class="col-md-4 text-center mb-3">
+              <h2 class="text-primary mb-0">{{ num_presencas }}</h2>
+              <p class="text-muted">Presenças</p>
+            </div>
+            <div class="col-md-4 text-center mb-3">
+              <h2 class="text-danger mb-0">{{ num_faltas }}</h2>
+              <p class="text-muted">Faltas</p>
+            </div>
+          </div>
+          <div class="progress" style="height: 25px">
+            <div
+              class="progress-bar bg-success"
+              role="progressbar"
+              style="width: {{ taxa_presenca }}%;"
+              aria-valuenow="{{ taxa_presenca }}"
+              aria-valuemin="0"
+              aria-valuemax="100"
+            >
+              {{ taxa_presenca }}%
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card border-warning mb-4">
+    <div class="card-header bg-warning text-dark">
+      <h5 class="mb-0">Turmas com Maior Taxa de Faltas</h5>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>Turma</th>
+              <th>Professor</th>
+              <th>Taxa de Faltas</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if turmas_mais_faltas %} {% for turma in turmas_mais_faltas %}
+            <tr>
+              <td>{{ turma.nome }}</td>
+              <td>{{ turma.professor }}</td>
+              <td>
+                <div class="progress" style="height: 20px">
+                  <div
+                    class="progress-bar bg-danger"
+                    role="progressbar"
+                    style="width: {{ turma.taxa_faltas }}%;"
+                    aria-valuenow="{{ turma.taxa_faltas }}"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                  >
+                    {{ turma.taxa_faltas }}%
+                  </div>
+                </div>
+              </td>
+              <td>
+                <a
+                  href="{{ url_for('master_gerenciar_alunos', turma_id=turma.id) }}"
+                  class="btn btn-sm btn-outline-primary"
+                >
+                  <i class="fas fa-eye"></i> Ver Alunos
+                </a>
+              </td>
+            </tr>
+            {% endfor %} {% else %}
+            <tr>
+              <td colspan="4" class="text-center">Nenhum dado disponível</td>
+            </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends "base.html" %} {% block title %}Dashboard - Professor{% endblock %}
+{% block extra_css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/professor-dashboard.css') }}"
+/>
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+/>
+{% endblock %} {% block content %}
+<div class="professor-dashboard">
+  <div class="professor-header">
+    <h1>Bem-vindo, Professor!</h1>
+    <p>
+      Gerencie suas turmas e registre a presença dos alunos no Sistema de
+      Chamada do Instituto da Oportunidade Social
+    </p>
+  </div>
+
+  <!-- Seção de estatísticas -->
+  <div class="stats-section">
+    <div class="stat-card">
+      <div class="stat-icon">
+        <i class="fas fa-users"></i>
+      </div>
+      <div class="stat-value">{{ turmas|length }}</div>
+      <div class="stat-label">Turmas</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">
+        <i class="fas fa-user-graduate"></i>
+      </div>
+      <div class="stat-value">{{ total_alunos }}</div>
+      <div class="stat-label">Alunos</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">
+        <i class="fas fa-clipboard-check"></i>
+      </div>
+      <div class="stat-value">{{ total_chamadas }}</div>
+      <div class="stat-label">Chamadas</div>
+    </div>
+  </div>
+
+  <!-- Lista de turmas -->
+  <h2><i class="fas fa-chalkboard-teacher"></i> Suas Turmas</h2>
+
+  {% if turmas %}
+  <div class="turmas-grid">
+    {% for turma in turmas %}
+    <div class="turma-card">
+      <div class="turma-header">
+        <h3>{{ turma.nome }}</h3>
+      </div>
+      <div class="turma-body">
+        <div class="turma-info">
+          <p>
+            <i class="fas fa-user-graduate"></i> {{ turma.alunos|length }}
+            alunos
+          </p>
+          <p>
+            <i class="fas fa-calendar-check"></i> {{ turma.chamadas|length }}
+            chamadas registradas
+          </p>
+        </div>
+        <div class="turma-actions">
+          <a
+            href="{{ url_for('professor_registrar_chamada', turma_id=turma.id) }}"
+            class="btn-professor"
+          >
+            <i class="fas fa-clipboard-list"></i> Registrar Chamada
+          </a>
+          <a
+            href="{{ url_for('professor_visualizar_turma', turma_id=turma.id) }}"
+            class="btn-professor btn-professor-secondary"
+          >
+            <i class="fas fa-eye"></i> Visualizar
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <p>
+      <i class="fas fa-info-circle"></i> Você não tem turmas atribuídas no
+      momento.
+    </p>
+  </div>
+  {% endif %}
+
+  <!-- Aulas recentes -->
+  <div class="recent-classes">
+    <h2><i class="fas fa-history"></i> Chamadas Recentes</h2>
+
+    {% if chamadas_recentes %} {% for chamada in chamadas_recentes %}
+    <div class="class-item">
+      <div class="class-icon">
+        <i class="fas fa-clipboard-check"></i>
+      </div>
+      <div class="class-content">
+        <h3 class="class-title">{{ chamada.turma.nome }}</h3>
+        <p class="class-date">{{ chamada.data.strftime('%d/%m/%Y') }}</p>
+      </div>
+      <span class="class-status status-completado">Registrada</span>
+    </div>
+    {% endfor %} {% else %}
+    <p class="empty-state">Nenhuma chamada registrada recentemente.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

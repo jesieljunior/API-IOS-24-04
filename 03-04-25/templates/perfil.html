@@ -1,0 +1,237 @@
+{% extends "base.html" %} {% block title %}Meu Perfil | IOS - Sistema de
+Chamada{% endblock %} {% block extra_css %}
+<style>
+  .perfil-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+
+  .perfil-header {
+    background: linear-gradient(145deg, #6f42c1 0%, #5631a8 100%);
+    color: white;
+    padding: 2rem;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .perfil-avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    overflow: hidden;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    background-color: #f8f9fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .perfil-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .perfil-avatar .avatar-placeholder {
+    font-size: 4rem;
+    color: #6f42c1;
+    text-shadow: none;
+  }
+
+  .perfil-nome {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0.5rem 0;
+  }
+
+  .perfil-cargo {
+    font-size: 1rem;
+    opacity: 0.8;
+  }
+
+  .perfil-content {
+    padding: 2rem;
+  }
+
+  .perfil-section {
+    margin-bottom: 2rem;
+  }
+
+  .perfil-section-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #343a40;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e9ecef;
+  }
+
+  .perfil-info {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+    align-items: center;
+  }
+
+  .perfil-label {
+    font-weight: 600;
+    color: #6c757d;
+  }
+
+  .perfil-value {
+    color: #343a40;
+  }
+
+  .perfil-actions {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 2rem;
+  }
+
+  .btn-perfil {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1.5rem;
+    border-radius: 5px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s;
+    cursor: pointer;
+    border: none;
+  }
+
+  .btn-perfil i {
+    margin-right: 8px;
+  }
+
+  .btn-primary {
+    background-color: #6f42c1;
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background-color: #5631a8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-outline {
+    background-color: transparent;
+    color: #6f42c1;
+    border: 1px solid #6f42c1;
+    margin-left: 1rem;
+  }
+
+  .btn-outline:hover {
+    background-color: #f3f0f9;
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 768px) {
+    .perfil-container {
+      margin: 1rem;
+    }
+
+    .perfil-avatar {
+      width: 120px;
+      height: 120px;
+    }
+
+    .perfil-nome {
+      font-size: 1.5rem;
+    }
+
+    .perfil-info {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+
+    .perfil-label {
+      margin-bottom: 0;
+    }
+  }
+</style>
+{% endblock %} {% block content %}
+<div class="perfil-container">
+  <div class="perfil-header">
+    <div class="perfil-avatar">
+      {% if professor and professor.foto_perfil %}
+      <img
+        src="{{ url_for('static', filename=professor.foto_perfil) }}"
+        alt="{{ professor.nome }}"
+      />
+      {% else %}
+      <div class="avatar-placeholder">
+        {{ professor.nome[0]|upper if professor and professor.nome else 'U' }}
+      </div>
+      {% endif %}
+    </div>
+    <h1 class="perfil-nome">
+      {{ professor.nome if professor else usuario.email }}
+    </h1>
+    <p class="perfil-cargo">
+      {% if session.get('tipo_usuario') == 'master' %} Administrador {% elif
+      session.get('tipo_usuario') == 'professor' %} Professor {% else %} Usuário
+      {% endif %}
+    </p>
+  </div>
+
+  <div class="perfil-content">
+    <div class="perfil-section">
+      <h2 class="perfil-section-title">Informações Pessoais</h2>
+
+      <div class="perfil-info">
+        <div class="perfil-label">Nome:</div>
+        <div class="perfil-value">
+          {{ professor.nome if professor and professor.nome else 'Não informado'
+          }}
+        </div>
+      </div>
+
+      <div class="perfil-info">
+        <div class="perfil-label">E-mail:</div>
+        <div class="perfil-value">{{ usuario.email }}</div>
+      </div>
+    </div>
+
+    {% if session.get('tipo_usuario') == 'professor' %}
+    <div class="perfil-section">
+      <h2 class="perfil-section-title">Minhas Turmas</h2>
+
+      {% if turmas %} {% for turma in turmas %}
+      <div class="perfil-info">
+        <div class="perfil-label">Turma:</div>
+        <div class="perfil-value">
+          <a
+            href="{{ url_for('professor_visualizar_turma', turma_id=turma.id) }}"
+            >{{ turma.nome }}</a
+          >
+        </div>
+      </div>
+      {% endfor %} {% else %}
+      <p>Nenhuma turma atribuída no momento.</p>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="perfil-actions">
+      <a href="{{ url_for('editar_perfil') }}" class="btn-perfil btn-primary">
+        <i class="fas fa-user-edit"></i> Editar Perfil
+      </a>
+      <a href="{{ url_for('logout') }}" class="btn-perfil btn-outline">
+        <i class="fas fa-sign-out-alt"></i> Sair
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

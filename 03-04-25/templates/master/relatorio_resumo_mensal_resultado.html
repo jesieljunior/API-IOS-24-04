@@ -1,0 +1,209 @@
+{% extends "base.html" %} {% block title %}Resumo Mensal - {{ nome_mes }} {{ ano
+}}{% endblock %} {% block extra_css %}
+<style>
+  .report-container {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .report-header {
+    margin-bottom: 2rem;
+  }
+
+  .report-title {
+    color: #343a40;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #6f42c1;
+  }
+
+  .report-subtitle {
+    color: #6c757d;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+    max-width: 100%;
+  }
+
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 0.75rem;
+    text-align: center;
+    border: 1px solid #dee2e6;
+  }
+
+  .data-table th {
+    background-color: #f8f9fa;
+    position: sticky;
+    top: 0;
+    font-weight: 600;
+  }
+
+  .data-table .turma-nome {
+    text-align: left;
+    font-weight: 500;
+  }
+
+  .data-table tr:nth-child(even) {
+    background-color: #f8f9fa;
+  }
+
+  .data-table tr:hover {
+    background-color: #f1f1f1;
+  }
+
+  .presenca-alta {
+    color: #28a745;
+    font-weight: bold;
+  }
+
+  .presenca-media {
+    color: #fd7e14;
+    font-weight: bold;
+  }
+
+  .presenca-baixa {
+    color: #dc3545;
+    font-weight: bold;
+  }
+
+  .btn-container {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: 5px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s;
+    cursor: pointer;
+    border: none;
+    font-size: 1rem;
+  }
+
+  .btn i {
+    margin-right: 8px;
+  }
+
+  .btn-secondary {
+    background-color: #6c757d;
+    color: white;
+  }
+
+  .btn-secondary:hover {
+    background-color: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .btn-outline {
+    background-color: transparent;
+    border: 1px solid #ced4da;
+    color: #6c757d;
+  }
+
+  .btn-outline:hover {
+    background-color: #f8f9fa;
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 768px) {
+    .btn-container {
+      flex-direction: column;
+    }
+  }
+</style>
+{% endblock %} {% block content %}
+<div class="report-container">
+  <div class="report-header">
+    <h1 class="report-title">
+      <i class="fas fa-calendar-alt"></i> Resumo Mensal de Frequência
+    </h1>
+
+    <h2 class="report-subtitle">{{ nome_mes }} {{ ano }}</h2>
+  </div>
+
+  <div class="table-responsive">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Turma</th>
+          <th>Professor</th>
+          <th>Total Alunos</th>
+          <th>Presenças</th>
+          <th>Faltas</th>
+          <th>Justificativas</th>
+          <th>Taxa de Presença</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in dados %}
+        <tr>
+          <td class="turma-nome">{{ item.nome }}</td>
+          <td>{{ item.professor }}</td>
+          <td>{{ item.num_alunos }}</td>
+          <td>{{ item.num_presencas }}</td>
+          <td>{{ item.num_faltas }}</td>
+          <td>{{ item.num_justificativas }}</td>
+          <td>
+            {% if item.taxa_presenca >= 85 %}
+            <span class="presenca-alta">{{ item.taxa_presenca }}%</span>
+            {% elif item.taxa_presenca >= 75 %}
+            <span class="presenca-media">{{ item.taxa_presenca }}%</span>
+            {% else %}
+            <span class="presenca-baixa">{{ item.taxa_presenca }}%</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if not dados %}
+  <div class="alert alert-info mt-4">
+    <i class="fas fa-info-circle"></i> Não há dados de frequência registrados
+    para este período.
+  </div>
+  {% endif %}
+
+  <div class="btn-container">
+    <form method="POST" action="{{ url_for('relatorio_resumo_mensal') }}">
+      <input type="hidden" name="mes" value="{{ mes }}" />
+      <input type="hidden" name="ano" value="{{ ano }}" />
+      <button
+        type="submit"
+        name="formato"
+        value="pdf"
+        class="btn btn-secondary"
+      >
+        <i class="fas fa-file-pdf"></i> Exportar como PDF
+      </button>
+    </form>
+
+    <a href="{{ url_for('relatorio_resumo_mensal') }}" class="btn btn-outline">
+      <i class="fas fa-search"></i> Novo Relatório
+    </a>
+  </div>
+</div>
+{% endblock %}

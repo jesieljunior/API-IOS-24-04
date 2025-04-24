@@ -1,0 +1,85 @@
+{% extends "base.html" %} {% block title %}Chamada - {{
+data.strftime('%d/%m/%Y') }}{% endblock %} {% block extra_css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/professor-dashboard.css') }}"
+/>
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+/>
+{% endblock %} {% block content %}
+<div class="professor-dashboard">
+  <div class="professor-header">
+    <h1>Chamada do dia {{ data.strftime('%d/%m/%Y') }}</h1>
+    <p>Turma: {{ turma.nome }}</p>
+  </div>
+
+  <div class="action-card">
+    <div class="turma-header">
+      <h3><i class="fas fa-clipboard-list"></i> Registro de Presença</h3>
+    </div>
+    <div class="turma-body">
+      {% if chamadas %}
+      <table class="chamada-table">
+        <thead>
+          <tr>
+            <th>Aluno</th>
+            <th>Status</th>
+            <th>Justificativa</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for chamada in chamadas %}
+          <tr>
+            <td>{{ chamada.aluno.nome }}</td>
+            <td>
+              {% if chamada.presente %}
+              <span class="status-ind presente-ind"></span> Presente {% else %}
+              <span class="status-ind ausente-ind"></span> Ausente {% endif %}
+            </td>
+            <td>
+              {{ chamada.justificativa if chamada.justificativa else '-' }}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="empty-state">Não há registros de chamada para esta data.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Conteúdo da aula -->
+  <div class="action-card" style="margin-top: 2rem">
+    <div class="turma-header">
+      <h3><i class="fas fa-book-open"></i> Conteúdo da Aula</h3>
+    </div>
+    <div class="turma-body">
+      {% if conteudo_aula %}
+      <div class="content-block">
+        <p>{{ conteudo_aula }}</p>
+      </div>
+      {% else %}
+      <p class="empty-state">Não há conteúdo registrado para esta aula.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="form-footer" style="margin-top: 2rem">
+    <a
+      href="{{ url_for('professor_editar_chamada', turma_id=turma.id, data=data) }}"
+      class="btn-professor"
+    >
+      <i class="fas fa-edit"></i> Editar Chamada
+    </a>
+    <a
+      href="{{ url_for('professor_visualizar_turma', turma_id=turma.id) }}"
+      class="btn-professor btn-professor-secondary"
+    >
+      <i class="fas fa-arrow-left"></i> Voltar para Turma
+    </a>
+  </div>
+</div>
+{% endblock %}

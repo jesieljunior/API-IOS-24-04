@@ -1,0 +1,202 @@
+{% extends "base.html" %} {% block title %}Relatório: {{ turma.nome }} - Sistema
+de Chamada{% endblock %} {% block extra_css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/master-dashboard.css') }}"
+/>
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+/>
+<style>
+  .presence-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .presence-table th,
+  .presence-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+  }
+
+  .presence-table th {
+    background-color: #6f42c1;
+    color: white;
+  }
+
+  .presence-table tr:nth-child(even) {
+    background-color: #f8f9fa;
+  }
+
+  .presence-table tr:hover {
+    background-color: #e9ecef;
+  }
+
+  .status-presente {
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
+    background-color: #20c997;
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  .status-falta {
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
+    background-color: #dc3545;
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  .content-block {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .content-block h4 {
+    color: #6f42c1;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+  }
+
+  .content-block p {
+    white-space: pre-line;
+  }
+</style>
+{% endblock %} {% block content %}
+<div class="master-dashboard">
+  <div class="master-header">
+    <h1>Relatório de Presença: {{ turma.nome }}</h1>
+    <p>
+      Professor: {{ turma.professor.nome if turma.professor and
+      turma.professor.nome else 'Não atribuído' }}
+    </p>
+  </div>
+
+  <div class="action-card">
+    <div class="card-header">
+      <h3><i class="fas fa-chart-line"></i> Resumo da Turma</h3>
+    </div>
+    <div class="card-body">
+      <div class="master-stats">
+        <div class="stat-box primary">
+          <div class="stat-value">
+            {{ "%.1f"|format(porcentagem_presenca_media) }}%
+          </div>
+          <div class="stat-label">Presença Média</div>
+        </div>
+
+        <div class="stat-box secondary">
+          <div class="stat-value">{{ datas_chamada|length }}</div>
+          <div class="stat-label">Aulas Registradas</div>
+        </div>
+
+        <div class="stat-box success">
+          <div class="stat-value">{{ turma.alunos|length }}</div>
+          <div class="stat-label">Total de Alunos</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="action-card" style="margin-top: 2rem">
+    <div class="card-header">
+      <h3><i class="fas fa-table"></i> Quadro de Presenças</h3>
+    </div>
+    <div class="card-body" style="overflow-x: auto">
+      {% if dados_alunos %}
+      <table class="presence-table">
+        <thead>
+          <tr>
+            <th>Aluno</th>
+            {% for data in datas_chamada %}
+            <th>{{ data.strftime('%d/%m') }}</th>
+            {% endfor %}
+            <th>Presenças</th>
+            <th>Faltas</th>
+            <th>%</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for dado in dados_alunos %}
+          <tr>
+            <td>{{ dado.aluno.nome }}</td>
+
+            {% for data in datas_chamada %}
+            <td class="text-center">
+              {% set chamada = dado.aluno.chamadas|selectattr('data', 'eq',
+              data)|first %} {% if chamada %} {% if chamada.presente %}
+              <span class="status-presente">P</span>
+              {% else %}
+              <span class="status-falta">F</span>
+              {% endif %} {% else %} - {% endif %}
+            </td>
+            {% endfor %}
+
+            <td><strong>{{ dado.presencas }}</strong></td>
+            <td><strong>{{ dado.faltas }}</strong></td>
+            <td>
+              <strong>{{ "%.1f"|format(dado.porcentagem_presenca) }}%</strong>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty-state">
+        <p>
+          <i class="fas fa-info-circle"></i> Não há dados de presença para esta
+          turma.
+        </p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if conteudos_aula %}
+  <div class="action-card" style="margin-top: 2rem">
+    <div class="card-header">
+      <h3><i class="fas fa-book-open"></i> Conteúdos das Aulas</h3>
+    </div>
+    <div class="card-body">
+      {% for data, conteudo in conteudos_aula.items() %}
+      <div class="content-block">
+        <h4>Aula {{ data.strftime('%d/%m/%Y') }}</h4>
+        <p>{{ conteudo }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <div style="text-align: center; margin-top: 2rem">
+    <a
+      href="{{ url_for('master_exportar_pdf', turma_id=turma.id) }}"
+      class="btn-master"
+    >
+      <i class="fas fa-file-pdf"></i> Exportar PDF
+    </a>
+    <a
+      href="{{ url_for('master_relatorios') }}"
+      class="btn-master btn-master-secondary"
+      style="margin-left: 1rem"
+    >
+      <i class="fas fa-arrow-left"></i> Voltar para Relatórios
+    </a>
+  </div>
+</div>
+{% endblock %}

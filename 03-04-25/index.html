@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Instituto da Oportunidade Social - Promovendo inclusão digital e oportunidades de carreira para jovens e pessoas com deficiência" />
+    <meta name="keywords" content="inclusão digital, formação profissional, oportunidades, educação, tecnologia, jovens, pessoas com deficiência, IOS, Instituto da Oportunidade Social" />
+    <title>Lista de Projetos - Instituto da Oportunidade Social</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <header class="main-header">
+        <div class="container">
+            <h1>Instituto da Oportunidade Social - Inclusão Digital e Profissional</h1>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="logo-container">
+            <img src="static/img/logo-ios.png" alt="Logo do Instituto da Oportunidade Social" class="logo">
+        </div>
+
+        <h2 class="page-title">Projetos do Instituto da Oportunidade Social</h2>
+        
+        <section class="content-section">
+            <h3 class="category">Cursos de Formação Profissional</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Nome do Curso</th>
+                        <th>Área</th>
+                        <th>Público-alvo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><a href="administracao/index.html">Administração</a></td>
+                        <td>Gestão Empresarial</td>
+                        <td>Jovens de 15 a 29 anos</td>
+                    </tr>
+                    <tr>
+                        <td><a href="ti/index.html">Tecnologia da Informação</a></td>
+                        <td>Computação</td>
+                        <td>Jovens de 15 a 29 anos</td>
+                    </tr>
+                    <tr>
+                        <td><a href="pcd/index.html">Tecnologia para PCD</a></td>
+                        <td>Computação</td>
+                        <td>Pessoas com deficiência</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="content-section">
+            <h3 class="category">Ferramentas de Apoio</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Ferramenta</th>
+                        <th>Descrição</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><a href="{{ url_for('login') }}">Sistema de Chamada</a></td>
+                        <td>Sistema para controle de presença dos alunos</td>
+                    </tr>
+                    <tr>
+                        <td><a href="#">Portal do Aluno</a></td>
+                        <td>Acesso a materiais didáticos e notas</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; 2025 Instituto da Oportunidade Social - Todos os direitos reservados</p>
+        </div>
+    </footer>
+</body>
+</html>

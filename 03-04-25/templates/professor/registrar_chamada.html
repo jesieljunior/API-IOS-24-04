@@ -1,0 +1,199 @@
+{% extends "base.html" %} {% block title %}Registro de Chamada - {{ turma.nome
+}}{% endblock %} {% block extra_css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/professor-dashboard.css') }}"
+/>
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/chamada.css') }}"
+/>
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+/>
+{% endblock %} {% block content %}
+<div class="professor-dashboard">
+  <!-- Header no estilo SENAC -->
+  <div class="header-ios">
+    <img
+      src="{{ url_for('static', filename='img/logo-ios.png') }}"
+      alt="Logo IOS"
+    />
+    <h2>Sistema de Chamada - IOS</h2>
+  </div>
+
+  <!-- Menu de navegação similar ao SENAC -->
+  <div class="menu-bar">
+    <a href="{{ url_for('professor_dashboard') }}"
+      ><i class="fas fa-home"></i> Início</a
+    >
+    <a href="#"><i class="fas fa-users"></i> Turmas</a>
+    <a href="#" class="active"
+      ><i class="fas fa-clipboard-list"></i> Notas/Presenças e Atividades</a
+    >
+  </div>
+
+  <div class="chamada-container">
+    <div class="chamada-titulo">
+      <i class="fas fa-clipboard-check"></i> Registro de Presença - {{
+      turma.nome }}
+    </div>
+
+    <div class="chamada-content">
+      <form
+        method="POST"
+        action="{{ url_for('professor_registrar_chamada', turma_id=turma.id) }}"
+        enctype="multipart/form-data"
+      >
+        <div class="form-row">
+          <div class="form-group">
+            <label for="data">Data da Aula:</label>
+            <input
+              type="date"
+              id="data"
+              name="data"
+              value="{{ data_hoje }}"
+              class="form-control"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="tipo-presenca">Tipo de Presença:</label>
+            <select
+              id="tipo-presenca"
+              name="tipo-presenca"
+              class="form-control"
+            >
+              <option value="presencial" selected>Presencial</option>
+              <option value="online">Online</option>
+              <option value="hibrida">Híbrida</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="content-box">
+          <label for="atividades">Atividades Desenvolvidas:</label>
+          <textarea
+            id="atividades"
+            name="atividades"
+            placeholder="Descreva as atividades realizadas na aula..."
+          ></textarea>
+        </div>
+
+        <div class="content-box">
+          <label for="conteudo">Observações da aula:</label>
+          <textarea
+            id="conteudo"
+            name="conteudo"
+            placeholder="Registre observações gerais sobre a aula..."
+          ></textarea>
+        </div>
+
+        <div class="chamada-lista">
+          <table class="chamada-table">
+            <thead>
+              <tr>
+                <th width="5%">ID</th>
+                <th width="30%">Nome</th>
+                <th width="15%">Matrícula</th>
+                <th width="15%">Faltas</th>
+                <th width="15%">Justificar</th>
+                <th width="20%">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for aluno in alunos %}
+              <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ aluno.nome }}</td>
+                <td>{{ aluno.id }}</td>
+                <td>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input falta-check"
+                      type="checkbox"
+                      id="falta_{{ aluno.id }}"
+                      name="falta_{{ aluno.id }}"
+                      value="1"
+                      data-aluno="{{ aluno.id }}"
+                    />
+                    <label class="form-check-label" for="falta_{{ aluno.id }}"
+                      >Faltou</label
+                    >
+                  </div>
+                </td>
+                <td>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input justify-check"
+                      type="checkbox"
+                      id="justificar_{{ aluno.id }}"
+                      name="justificar_{{ aluno.id }}"
+                      value="1"
+                      data-aluno="{{ aluno.id }}"
+                    />
+                    <label
+                      class="form-check-label"
+                      for="justificar_{{ aluno.id }}"
+                      >Justificar</label
+                    >
+                  </div>
+                </td>
+                <td>
+                  <div id="justify-field-{{ aluno.id }}" class="justify-field">
+                    <textarea
+                      name="justificativa_{{ aluno.id }}"
+                      placeholder="Motivo da falta..."
+                    ></textarea>
+                    <div class="file-upload">
+                      <label for="atestado_{{ aluno.id }}"
+                        >Anexar atestado:</label
+                      >
+                      <input
+                        type="file"
+                        id="atestado_{{ aluno.id }}"
+                        name="atestado_{{ aluno.id }}"
+                        accept=".pdf,.jpg,.jpeg,.png"
+                      />
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="nav-pagination">
+          <div class="pagination-info">Exibindo {{ alunos|length }} alunos</div>
+          <div class="pagination-controls">
+            <a href="#" class="disabled"
+              ><i class="fas fa-chevron-left"></i> Anterior</a
+            >
+            <span>1-{{ alunos|length }} de {{ alunos|length }}</span>
+            <a href="#" class="disabled"
+              >Próximo <i class="fas fa-chevron-right"></i
+            ></a>
+          </div>
+        </div>
+
+        <div class="btn-toolbar">
+          <button
+            type="button"
+            class="btn-professor btn-professor-secondary"
+            onclick="window.location='{{ url_for('professor_dashboard') }}'"
+          >
+            Cancelar
+          </button>
+          <button type="submit" class="btn-professor">Salvar e Retornar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %} {% block extra_js %}
+<script src="{{ url_for('static', filename='js/chamada.js') }}"></script>
+{% endblock %}

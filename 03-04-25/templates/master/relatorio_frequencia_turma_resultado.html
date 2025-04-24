@@ -1,0 +1,125 @@
+{% extends "base.html" %} {% block title %}Relatório de Frequência - {{
+turma.nome }}{% endblock %} {% block content %}
+<div class="container-fluid">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Relatório de Frequência - {{ turma.nome }}</h1>
+    <a
+      href="{{ url_for('master_relatorios_frequencia_turma', turma_id=turma.id, data_inicio=data_inicio, data_fim=data_fim, formato='pdf') }}"
+      class="btn btn-primary"
+    >
+      <i class="fas fa-file-pdf"></i> Exportar como PDF
+    </a>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Informações do Relatório</h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-4">
+          <p><strong>Turma:</strong> {{ turma.nome }}</p>
+        </div>
+        <div class="col-md-4">
+          <p>
+            <strong>Professor:</strong> {{ turma.professor.nome if
+            turma.professor else 'Não atribuído' }}
+          </p>
+        </div>
+        <div class="col-md-4">
+          <p><strong>Período:</strong> {{ data_inicio }} a {{ data_fim }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Registro de Frequência</h5>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-striped table-bordered table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Nome do Aluno</th>
+              {% for data in datas %}
+              <th class="text-center">{{ data|date }}</th>
+              {% endfor %}
+              <th class="text-center">% Presença</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for aluno in alunos %}
+            <tr>
+              <td>{{ aluno.nome }}</td>
+              {% for data in datas %}
+              <td class="text-center">
+                {% set status = dados_presenca[aluno.id]['presencas'].get(data,
+                '-') %} {% if status == 'presente' %}
+                <span class="badge bg-success">P</span>
+                {% elif status == 'falta' %}
+                <span class="badge bg-danger">F</span>
+                {% else %}
+                <span class="badge bg-secondary">-</span>
+                {% endif %}
+              </td>
+              {% endfor %} {% set registros =
+              dados_presenca[aluno.id]['presencas'].values()|list %} {% set
+              total = registros|length %} {% set presencas =
+              registros|selectattr('==', 'presente')|list|length %} {% set
+              percentual = (presencas / total * 100)|round(1) if total > 0 else
+              0 %}
+
+              <td class="text-center">
+                <div class="progress" style="height: 20px">
+                  <div
+                    class="progress-bar {% if percentual < 75 %}bg-danger{% else %}bg-success{% endif %}"
+                    role="progressbar"
+                    style="width: {{ percentual }}%;"
+                    aria-valuenow="{{ percentual }}"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                  >
+                    {{ percentual }}%
+                  </div>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <span class="badge bg-success me-2">P</span> Presente
+          <span class="badge bg-danger mx-2">F</span> Falta
+          <span class="badge bg-secondary mx-2">-</span> Não Registrado
+        </div>
+        <small class="text-muted"
+          >Relatório gerado em {{ now()|datetime }}</small
+        >
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Filtro para formatar datas -->
+{% raw %}
+<script>
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("pt-BR");
+  }
+
+  // Substituir todas as células de data pelo formato brasileiro
+  document.addEventListener("DOMContentLoaded", function () {
+    const dataCells = document.querySelectorAll("[data-date]");
+    dataCells.forEach((cell) => {
+      cell.textContent = formatDate(cell.getAttribute("data-date"));
+    });
+  });
+</script>
+{% endraw %} {% endblock %}

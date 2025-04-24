@@ -1,0 +1,52 @@
+{% extends "base.html" %} {% block title %}Relatórios - Sistema de Chamada{%
+endblock %} {% block content %}
+<div class="dashboard-container">
+  <div class="page-header">
+    <h2>Relatórios de Presença</h2>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3>Turmas Disponíveis</h3>
+    </div>
+
+    {% if turmas %}
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Turma</th>
+          <th>Professor</th>
+          <th>Total de Alunos</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for turma in turmas %}
+        <tr>
+          <td>{{ turma.nome }}</td>
+          <td>{{ turma.professor.nome }}</td>
+          <td>{{ turma.alunos|length }}</td>
+          <td class="actions">
+            <a
+              href="{{ url_for('master_relatorio_turma', turma_id=turma.id) }}"
+              class="btn btn-view"
+              >Ver Relatório</a
+            >
+            <a
+              href="{{ url_for('master_exportar_pdf', turma_id=turma.id) }}"
+              class="btn btn-primary"
+              >Exportar PDF</a
+            >
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+      <p>Nenhuma turma cadastrada.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

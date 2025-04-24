@@ -1,0 +1,94 @@
+{% extends "base.html" %} {% block title %}Relatórios do Sistema - IOS{%
+endblock %} {% block content %}
+<div class="container">
+  <h1 class="my-4">Relatórios do Sistema</h1>
+
+  <div class="row row-cols-1 row-cols-md-3 g-4 mb-5">
+    <div class="col">
+      <div class="card h-100 border-primary">
+        <div class="card-header bg-primary text-white">
+          <h5 class="card-title mb-0">Frequência por Turma</h5>
+        </div>
+        <div class="card-body">
+          <p class="card-text">
+            Relatório detalhado de frequência para uma turma específica em um
+            período determinado.
+          </p>
+          <ul>
+            <li>Visualize dados por aluno</li>
+            <li>Análise de frequência por data</li>
+            <li>Cálculo de percentuais de presença</li>
+          </ul>
+        </div>
+        <div class="card-footer text-center">
+          <a
+            href="{{ url_for('master_relatorios_frequencia_turma') }}"
+            class="btn btn-primary"
+          >
+            <i class="fas fa-users mr-2"></i> Gerar Relatório
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="card h-100 border-success">
+        <div class="card-header bg-success text-white">
+          <h5 class="card-title mb-0">Resumo Mensal</h5>
+        </div>
+        <div class="card-body">
+          <p class="card-text">
+            Relatório consolidado de frequência de todas as turmas para um mês
+            específico.
+          </p>
+          <ul>
+            <li>Visão global por turma</li>
+            <li>Totais de presença e faltas</li>
+            <li>Comparativo entre turmas</li>
+          </ul>
+        </div>
+        <div class="card-footer text-center">
+          <a
+            href="{{ url_for('master_relatorios_resumo_mensal') }}"
+            class="btn btn-success"
+          >
+            <i class="fas fa-calendar-alt mr-2"></i> Gerar Relatório
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="card h-100 border-warning">
+        <div class="card-header bg-warning text-dark">
+          <h5 class="card-title mb-0">Estatísticas Gerais</h5>
+        </div>
+        <div class="card-body">
+          <p class="card-text">
+            Estatísticas gerais e indicadores de desempenho do sistema nos
+            últimos 30 dias.
+          </p>
+          <ul>
+            <li>Totais de turmas, alunos e professores</li>
+            <li>Taxa global de presença</li>
+            <li>Turmas com maior taxa de faltas</li>
+          </ul>
+        </div>
+        <div class="card-footer text-center">
+          <a
+            href="{{ url_for('master_relatorios_estatisticas_gerais') }}"
+            class="btn btn-warning text-dark"
+          >
+            <i class="fas fa-chart-pie mr-2"></i> Gerar Relatório
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert alert-info">
+    <i class="fas fa-info-circle mr-2"></i>
+    Todos os relatórios podem ser exportados em formato PDF.
+  </div>
+</div>
+{% endblock %}

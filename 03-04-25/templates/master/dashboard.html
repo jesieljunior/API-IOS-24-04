@@ -1,0 +1,131 @@
+{% extends "base.html" %} {% block title %}Dashboard Administrativo - Sistema de
+Chamada{% endblock %} {% block extra_css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/master-dashboard.css') }}"
+/>
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+/>
+{% endblock %} {% block content %}
+<div class="master-dashboard">
+  <div class="master-header">
+    <h1>Dashboard Administrativo</h1>
+    <p>
+      Bem-vindo ao painel de controle do Sistema de Chamada do Instituto da
+      Oportunidade Social
+    </p>
+  </div>
+
+  <div class="master-stats">
+    <!-- Essas estatísticas podem ser dinâmicas baseadas em dados reais do banco de dados -->
+    <div class="stat-box primary">
+      <div class="stat-icon">
+        <i class="fas fa-users"></i>
+      </div>
+      <div class="stat-value">8</div>
+      <div class="stat-label">Turmas Ativas</div>
+    </div>
+
+    <div class="stat-box secondary">
+      <div class="stat-icon">
+        <i class="fas fa-chalkboard-teacher"></i>
+      </div>
+      <div class="stat-value">12</div>
+      <div class="stat-label">Professores</div>
+    </div>
+
+    <div class="stat-box success">
+      <div class="stat-icon">
+        <i class="fas fa-user-graduate"></i>
+      </div>
+      <div class="stat-value">245</div>
+      <div class="stat-label">Alunos</div>
+    </div>
+  </div>
+
+  <div class="master-actions">
+    <div class="action-card">
+      <div class="card-header">
+        <h3>Relatórios</h3>
+      </div>
+      <div class="card-body">
+        <p>
+          Acesse os relatórios de presença dos alunos. Visualize estatísticas
+          por turma e gere documentos em PDF para análise.
+        </p>
+        <a
+          href="{{ url_for('master_relatorios_frequencia_turma') }}"
+          class="btn-master"
+          >Ver Relatórios</a
+        >
+      </div>
+    </div>
+
+    <div class="action-card">
+      <div class="card-header">
+        <h3>Professores</h3>
+      </div>
+      <div class="card-body">
+        <p>
+          Gerencie o cadastro de professores. Adicione novos educadores e
+          associe-os às suas respectivas turmas.
+        </p>
+        <a
+          href="{{ url_for('master_gerenciar_professores') }}"
+          class="btn-master"
+          >Gerenciar Professores</a
+        >
+      </div>
+    </div>
+
+    <div class="action-card">
+      <div class="card-header">
+        <h3>Turmas</h3>
+      </div>
+      <div class="card-body">
+        <p>
+          Gerencie turmas e alunos. Crie novas turmas, adicione alunos e
+          acompanhe o desenvolvimento das aulas.
+        </p>
+        <a href="{{ url_for('master_gerenciar_turmas') }}" class="btn-master"
+          >Gerenciar Turmas</a
+        >
+      </div>
+    </div>
+  </div>
+
+  <div class="notifications-section">
+    <h3>Últimas Atividades</h3>
+    <div class="notification-item">
+      <div class="notification-dot"></div>
+      <div class="notification-content">
+        <p class="notification-text">
+          Nova turma de Desenvolvimento Web foi criada.
+        </p>
+        <p class="notification-time">Hoje, 14:30</p>
+      </div>
+    </div>
+    <div class="notification-item">
+      <div class="notification-dot"></div>
+      <div class="notification-content">
+        <p class="notification-text">
+          Professor Carlos Silva adicionou registros de presença para a turma
+          ADM-2023.
+        </p>
+        <p class="notification-time">Ontem, 09:15</p>
+      </div>
+    </div>
+    <div class="notification-item">
+      <div class="notification-dot"></div>
+      <div class="notification-content">
+        <p class="notification-text">
+          Relatório mensal de frequência foi gerado.
+        </p>
+        <p class="notification-time">23/04/2025, 16:45</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

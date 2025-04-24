@@ -1,0 +1,126 @@
+{% extends "base.html" %} {% block title %}Gerenciar Professores - Sistema de
+Chamada{% endblock %} {% block extra_css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/master-dashboard.css') }}"
+/>
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+/>
+{% endblock %} {% block content %}
+<div class="master-dashboard">
+  <div class="master-header">
+    <h1>Gerenciar Professores</h1>
+    <p>Adicione, edite ou remova professores do sistema</p>
+  </div>
+
+  <!-- Lista de Professores -->
+  <div class="action-card">
+    <div class="card-header">
+      <h3><i class="fas fa-chalkboard-teacher"></i> Lista de Professores</h3>
+    </div>
+    <div class="card-body">
+      {% if professores %}
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Turmas</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for professor in professores %}
+          <tr>
+            <td>{{ professor.nome if professor.nome else 'Sem nome' }}</td>
+            <td>{{ professor.email }}</td>
+            <td>{{ professor.turmas|length }}</td>
+            <td class="actions">
+              <form
+                method="POST"
+                action="{{ url_for('master_excluir_professor', professor_id=professor.id) }}"
+                class="inline-form"
+                onsubmit="return confirm('Tem certeza que deseja excluir este professor?');"
+              >
+                <button type="submit" class="btn btn-danger">
+                  <i class="fas fa-trash"></i> Excluir
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty-state">
+        <p><i class="fas fa-info-circle"></i> Nenhum professor cadastrado.</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Formulário para adicionar professor -->
+  <div class="action-card" style="margin-top: 2rem">
+    <div class="card-header">
+      <h3><i class="fas fa-user-plus"></i> Adicionar Novo Professor</h3>
+    </div>
+    <div class="card-body">
+      <form
+        method="POST"
+        action="{{ url_for('master_gerenciar_professores') }}"
+        class="form"
+      >
+        <div class="form-group">
+          <label for="nome">Nome:</label>
+          <input
+            type="text"
+            id="nome"
+            name="nome"
+            required
+            placeholder="Nome completo do professor"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            placeholder="email@exemplo.com"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="senha">Senha:</label>
+          <input
+            type="password"
+            id="senha"
+            name="senha"
+            required
+            placeholder="Senha de acesso"
+          />
+        </div>
+
+        <div class="form-group">
+          <button type="submit" class="btn-master">
+            <i class="fas fa-save"></i> Adicionar Professor
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div style="text-align: center; margin-top: 2rem">
+    <a
+      href="{{ url_for('master_dashboard') }}"
+      class="btn-master btn-master-secondary"
+    >
+      <i class="fas fa-arrow-left"></i> Voltar para Dashboard
+    </a>
+  </div>
+</div>
+{% endblock %}
